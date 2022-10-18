@@ -1,6 +1,7 @@
 class ScientistsController < ApplicationController
-rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
-rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
+    wrap_parameters format: []
+    rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+    rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
     # has_many :missions
 
     def index
@@ -12,26 +13,38 @@ rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_resp
         render json: find_scientist, status: :ok
     end
 
+    # def create
+    #     @scientist = Scientist.new(scientist_params)
+    #     if @scientist.save
+    #         render json: @scientist, status: :created
+    #     else
+    #         render json: @scientist.errors, status: :unprocessable_entity
+    #     end
+    # end
+
     def create
-        @scientist = Scientist.new(scientist_params)
-        if @scientist.save
-            render json: @scientist, status: :created
-        else
-            render json: @scientist.errors, status: :unprocessable_entity
-        end
+        scientist = Scientist.create!(scientist_params)
+        render json: scientist, status: :created
     end
 
+    # def update
+    #     @scientist = find_scientist.update(scientist_params)
+    #     if @scientist
+    #         render json: find_scientist, status: :accepted
+    #     else
+    #         render json: find_scientist.errors, status: :unprocessable_entity
+    #     end
+    # end
+
     def update
-        @scientist = find_scientist.update(scientist_params)
-        if @scientist
-            render json: find_scientist, status: :accepted
-        else
-            render json: find_scientist.errors, status: :unprocessable_entity
-        end
+        scientist = find_scientist
+        scientist.update!(scientist_params)
+        render json: scientist, status: :accepted
     end
 
     def destroy
         render json: find_scientist.destroy
+        head :no_content
     end
 
     private
@@ -48,7 +61,7 @@ rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_resp
         render json: { error: 'Scientist not found' }, status: :not_found
     end
 
-    # def render_unprocessable_entity_response(invalid)
-    #     render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
-    # end
+    def render_unprocessable_entity_response(invalid)
+        render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
+    end
 end

@@ -1,14 +1,20 @@
 class MissionsController < ApplicationController
+    wrap_parameters format: []
     rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
     # belongs_to :planet
 
+    # def create
+    #     @mission = Mission.new(mission_params)
+    #     if @mission.save
+    #         render json: @mission.planet, status: :created
+    #     else
+    #         render json: @mission.errors, status: :unprocessable_entity
+    #     end
+    # end
+
     def create
-        @mission = Mission.new(mission_params)
-        if @mission.save
-            render json: @mission.planet, status: :created
-        else
-            render json: @mission.errors, status: :unprocessable_entity
-        end
+        mission = Mission.create!(mission_params)
+        render json: mission.planet, status: :created
     end
 
     private
@@ -21,9 +27,9 @@ class MissionsController < ApplicationController
         params.permit(:name, :scientist_id, :planet_id)
     end
 
-    # def render_unprocessable_entity_response(invalid)
-    #     render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
-    # end
+    def render_unprocessable_entity_response(invalid)
+        render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
+    end
 
     
 end
