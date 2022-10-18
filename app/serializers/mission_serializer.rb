@@ -1,5 +1,5 @@
 class MissionSerializer < ActiveModel::Serializer
   # attributes :id, :name
-  belongs_to :planet
+  has_one :planet
 
 end
